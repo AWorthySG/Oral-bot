@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { Sfx } from './audio';
 import { getTierBank } from './data';
 import { Colliders } from './collision';
 import { Input } from './input';
@@ -25,6 +26,7 @@ import {
   type Tier,
 } from './types';
 import { Hud } from './ui/hud';
+import { Minimap } from './ui/minimap';
 import { Overlay } from './ui/overlay';
 import { PLAYER_BOUND_RADIUS, World } from './world/world';
 
@@ -37,6 +39,13 @@ const FACTORIES: Record<MinigameKind, MinigameFactory> = {
   arcade: createAnswerRun,
 };
 
+const KIND_LABEL: Record<MinigameKind, string> = {
+  quiz: 'Quiz',
+  match: 'Matching',
+  balance: 'Puzzle',
+  arcade: 'Arcade',
+};
+
 export class Game {
   readonly scene = new THREE.Scene();
   readonly camera: THREE.PerspectiveCamera;
@@ -46,8 +55,10 @@ export class Game {
   private player: Player;
   private world: World;
   private hud: Hud;
+  private minimap: Minimap;
   private overlay: Overlay;
   private progression: Progression;
+  private sfx = new Sfx();
 
   private state: State = 'explore';
   private activeMinigame: Minigame | null = null;
@@ -61,6 +72,7 @@ export class Game {
 
     const uiRoot = document.getElementById('ui-root')!;
     this.hud = new Hud(uiRoot);
+    this.minimap = new Minimap(uiRoot);
     this.overlay = new Overlay(uiRoot);
 
     this.world = new World({
@@ -77,6 +89,7 @@ export class Game {
     this.player.updateCamera(this.camera, 0, true);
 
     this.hud.refreshGrades(this.progression);
+    this.hud.setObjective(this.progression.nextObjective());
     this.hud.showHint('W/S move · A/D turn · Shift run · E interact · R report · P pause');
 
     this.setupDevApi();
@@ -150,7 +163,10 @@ export class Game {
         input: this.input,
         snapCamera: () => this.player.updateCamera(this.camera, 0, true),
         showBanner: (q, round, total, frac) => this.hud.showArcade(q, round, total, frac),
-        flashAnswer: (correct, text) => this.hud.flashAnswer(correct, text),
+        flashAnswer: (correct, text) => {
+          this.sfx.play(correct ? 'correct' : 'wrong');
+          this.hud.flashAnswer(correct, text);
+        },
         hideBanner: () => this.hud.hideArcade(),
       };
     } else {
@@ -167,9 +183,11 @@ export class Game {
       bank,
       panel,
       arena,
+      playSfx: (name) => this.sfx.play(name),
       finish,
     };
     this.activeMinigame = FACTORIES[kind](ctx);
+    this.sfx.play('start');
     this.activeMinigame.start();
   }
 
@@ -201,24 +219,49 @@ export class Game {
     this.activeMinigame = null;
     this.activeContext = null;
     this.inArena = false;
-    this.overlay.close();
     this.hud.hideArcade();
-    this.state = 'explore';
-    if (!ctx) return;
-
-    if (!result.forfeited) {
-      const summary = this.progression.award(ctx.subject, ctx.kind, ctx.tier, result);
-      this.afterAward(ctx.subject, summary);
+    if (!ctx) {
+      this.overlay.close();
+      this.state = 'explore';
+      return;
     }
+
+    let summary: ReturnType<Progression['applyXp']> | null = null;
+    if (!result.forfeited) {
+      summary = this.progression.award(ctx.subject, ctx.kind, ctx.tier, result);
+      this.applySideEffects(ctx.subject, summary);
+      this.sfx.play(summary.newGrade !== summary.oldGrade ? 'gradeUp' : 'xp');
+    } else {
+      this.sfx.play('forfeit');
+    }
+
+    // Hold in a paused state behind the results card until the player continues.
+    this.state = 'paused';
+    this.overlay.showResults(
+      {
+        title: `${SUBJECT_NAMES[ctx.subject]} ${ctx.tier}-Level`,
+        kindLabel: KIND_LABEL[ctx.kind],
+        correct: result.correct,
+        total: result.total,
+        perfect: result.perfect,
+        forfeited: result.forfeited,
+        xpGain: summary?.xpGain ?? 0,
+        messages: summary?.messages ?? [],
+      },
+      () => {
+        this.overlay.close();
+        this.state = 'explore';
+      },
+    );
   }
 
+  /** Dev/grantXp path: shows HUD toast + banner instead of the results card. */
   private afterAward(
     subject: SubjectId,
     summary: ReturnType<Progression['applyXp']>,
   ): void {
     if (summary.xpGain > 0) {
       this.hud.toast(`+${Math.round(summary.xpGain)} XP ${SUBJECT_NAMES[subject]}`);
-      this.hud.flashChip(subject);
     }
     if (summary.newGrade !== summary.oldGrade) {
       this.hud.banner(
@@ -228,9 +271,21 @@ export class Game {
     } else if (summary.messages.length > 0) {
       this.hud.banner('Unlocked!', summary.messages);
     }
+    this.applySideEffects(subject, summary);
+    this.sfx.play(summary.newGrade !== summary.oldGrade ? 'gradeUp' : 'xp');
+  }
+
+  /** Shared post-award updates: world unlocks, cosmetics, HUD, objective, save. */
+  private applySideEffects(
+    subject: SubjectId,
+    summary: ReturnType<Progression['applyXp']>,
+  ): void {
     for (const s of summary.zoneUnlocks) this.world.zones.get(s)?.unlock();
+    if (summary.messages.length > 0) this.sfx.play('unlock');
     this.applyCosmetics();
     this.hud.refreshGrades(this.progression);
+    this.hud.flashChip(subject);
+    this.hud.setObjective(this.progression.nextObjective());
     scheduleSave(() => this.progression.toSave());
   }
 
@@ -269,6 +324,9 @@ export class Game {
           resetSave();
           window.location.reload();
         },
+        objective: this.progression.nextObjective(),
+        muted: this.sfx.muted,
+        onToggleMute: () => this.sfx.toggleMute(),
       });
     } else if (this.state === 'paused' && this.overlay.isOpen) {
       this.overlay.requestClose();
@@ -285,6 +343,10 @@ export class Game {
     }
     if (this.input.wasPressed('KeyP') && this.state !== 'minigame') this.togglePause();
     if (this.input.wasPressed('KeyR') && this.state === 'explore') this.openReportCard();
+    if (this.input.wasPressed('KeyM')) {
+      const muted = this.sfx.toggleMute();
+      this.hud.showHint(muted ? '🔇 Sound off' : '🔊 Sound on', 1500);
+    }
 
     if (this.state === 'explore') {
       this.updateExplore(dt);
@@ -308,6 +370,8 @@ export class Game {
     const near = this.interactions.findNearest(this.player.pos.x, this.player.pos.z);
     this.hud.setPrompt(near ? near.prompt() : null);
     if (near && this.input.wasPressed('KeyE')) near.onInteract();
+
+    this.minimap.update(this.player.pos.x, this.player.pos.z, this.player.facing, this.progression);
   }
 
   onResize(): void {

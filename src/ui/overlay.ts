@@ -90,7 +90,13 @@ export class Overlay {
     body.appendChild(row);
   }
 
-  showPause(opts: { onResume: () => void; onReset: () => void }): void {
+  showPause(opts: {
+    onResume: () => void;
+    onReset: () => void;
+    objective: string;
+    muted: boolean;
+    onToggleMute: () => boolean;
+  }): void {
     const body = this.open('Paused', opts.onResume);
     const help = div('pause-help');
     help.innerHTML = `
@@ -100,10 +106,20 @@ export class Overlay {
       <ul>
         <li><strong>W / S</strong> — move, <strong>A / D</strong> — turn, <strong>Shift</strong> — run</li>
         <li><strong>E</strong> — interact with stations and signs</li>
-        <li><strong>R</strong> — report card, <strong>P / Esc</strong> — pause</li>
+        <li><strong>R</strong> — report card, <strong>M</strong> — mute, <strong>P / Esc</strong> — pause</li>
       </ul>`;
     body.appendChild(help);
-    body.appendChild(button('mg-button', 'Resume', opts.onResume));
+    body.appendChild(div('pause-objective', `🎯 ${opts.objective}`));
+
+    const row = div('confirm-row');
+    row.appendChild(button('mg-button', 'Resume', opts.onResume));
+    const mute = button('mg-button mg-secondary', opts.muted ? '🔇 Sound: off' : '🔊 Sound: on', () => {
+      const m = opts.onToggleMute();
+      mute.textContent = m ? '🔇 Sound: off' : '🔊 Sound: on';
+    });
+    row.appendChild(mute);
+    body.appendChild(row);
+
     body.appendChild(
       button('mg-button mg-danger', 'Reset save', () => {
         this.showConfirm('Erase all progress and start over?', opts.onReset, () =>
@@ -111,6 +127,38 @@ export class Overlay {
         );
       }),
     );
+  }
+
+  showResults(
+    data: {
+      title: string;
+      kindLabel: string;
+      correct: number;
+      total: number;
+      perfect: boolean;
+      forfeited: boolean;
+      xpGain: number;
+      messages: string[];
+    },
+    onContinue: () => void,
+  ): void {
+    const body = this.open(data.forfeited ? 'Game Left' : 'Results', onContinue);
+    body.classList.add('results-card');
+    body.appendChild(div('results-sub', `${data.title} · ${data.kindLabel}`));
+
+    if (data.forfeited) {
+      body.appendChild(div('mg-prompt', 'No XP earned this time.'));
+    } else {
+      const score = div('results-score');
+      score.appendChild(div('results-score-num', `${data.correct}/${data.total}`));
+      score.appendChild(div('results-score-label', 'correct'));
+      body.appendChild(score);
+      if (data.perfect) body.appendChild(div('results-perfect', '★ PERFECT ★'));
+      body.appendChild(div('results-xp', `+${Math.round(data.xpGain)} XP`));
+      for (const m of data.messages) body.appendChild(div('results-msg', m));
+    }
+
+    body.appendChild(button('mg-button', 'Continue', onContinue));
   }
 
   showConfirm(text: string, onYes: () => void, onNo: () => void): void {

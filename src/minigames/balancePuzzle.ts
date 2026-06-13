@@ -119,12 +119,14 @@ export function createBalancePuzzle(ctx: MinigameContext): Minigame {
     const want = p.kind === 'coefficients' ? p.solution.join(',') : p.tokens.join('|');
     if (getAttempt() === want) {
       solved++;
+      ctx.playSfx('correct');
       feedbackEl.textContent = 'Solved!';
       feedbackEl.className = 'mg-feedback good';
       nextTimer = 1.0;
     } else {
       wrongThisPuzzle++;
       totalWrong++;
+      ctx.playSfx('wrong');
       if (wrongThisPuzzle >= MAX_WRONG_CHECKS) {
         feedbackEl.textContent = `Answer: ${answerText}`;
         feedbackEl.className = 'mg-feedback bad';

@@ -22,15 +22,19 @@ export class Hud {
   private arcadeTimerFill: HTMLElement;
   private arcadeFlash: HTMLElement;
   private hintEl: HTMLElement;
+  private objectiveEl: HTMLElement;
   private bannerTimer: number | null = null;
 
   constructor(root: HTMLElement) {
+    const topLeft = div('hud-topleft');
     const strip = div('hud-grades');
     for (const s of SUBJECT_IDS) {
       const chip = div('hud-chip', `${SUBJECT_SHORT[s]} --`);
       this.chips.set(s, chip);
       strip.appendChild(chip);
     }
+    this.objectiveEl = div('hud-objective hidden');
+    topLeft.append(strip, this.objectiveEl);
     this.toastBox = div('hud-toasts');
     this.bannerEl = div('hud-banner hidden');
     this.promptEl = div('hud-prompt hidden');
@@ -46,7 +50,12 @@ export class Hud {
 
     this.hintEl = div('hud-hint hidden');
 
-    root.append(strip, this.toastBox, this.bannerEl, this.promptEl, this.arcadeEl, this.arcadeFlash, this.hintEl);
+    root.append(topLeft, this.toastBox, this.bannerEl, this.promptEl, this.arcadeEl, this.arcadeFlash, this.hintEl);
+  }
+
+  setObjective(text: string): void {
+    this.objectiveEl.textContent = `🎯 ${text}`;
+    this.objectiveEl.classList.remove('hidden');
   }
 
   refreshGrades(p: Progression): void {

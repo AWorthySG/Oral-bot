@@ -66,10 +66,12 @@ export function createQuiz(ctx: MinigameContext): Minigame {
     buttons[q.answerIndex]?.classList.add('right');
     if (ok) {
       correct++;
+      ctx.playSfx('correct');
       dots[index]!.classList.add('good');
       feedbackEl.textContent = 'Correct!';
       feedbackEl.classList.add('good');
     } else {
+      ctx.playSfx('wrong');
       btn?.classList.add('wrong');
       dots[index]!.classList.add('bad');
       feedbackEl.textContent = q.explanation

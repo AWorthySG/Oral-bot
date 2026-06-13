@@ -61,9 +61,11 @@ export function createMatchPuzzle(ctx: MinigameContext): Minigame {
         b.disabled = true;
       }
       matched++;
+      ctx.playSfx('correct');
       if (matched === pairs.length) endTimer = 0.8;
     } else {
       mistakes++;
+      ctx.playSfx('wrong');
       for (const b of [l, r]) {
         b.classList.add('shake');
         setTimeout(() => {

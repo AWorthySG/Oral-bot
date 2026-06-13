@@ -29,7 +29,14 @@ Desktop with a keyboard is recommended.
 | `Shift` | Run |
 | `E` | Interact with a station or sign |
 | `R` | Open your report card |
+| `M` | Toggle sound on/off |
 | `P` / `Esc` | Pause / help |
+
+The HUD shows a **mini-map** (top-right) of the island and zones, plus a
+**current objective** that suggests what to aim for next. Finishing a minigame
+brings up a **results card** with your score and XP earned. Sound effects are
+synthesised in-browser via the Web Audio API (no audio files), and your mute
+preference is remembered.
 
 ## How to play
 
