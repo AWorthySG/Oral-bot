@@ -28,6 +28,7 @@ import {
 import { Hud } from './ui/hud';
 import { Minimap } from './ui/minimap';
 import { Overlay } from './ui/overlay';
+import { TouchControls, isTouchDevice } from './ui/touch';
 import { PLAYER_BOUND_RADIUS, World } from './world/world';
 
 type State = 'explore' | 'minigame' | 'paused';
@@ -73,6 +74,8 @@ export class Game {
     const uiRoot = document.getElementById('ui-root')!;
     this.hud = new Hud(uiRoot);
     this.minimap = new Minimap(uiRoot);
+    // Touch controls go in before the overlay so modal backdrops sit above them.
+    new TouchControls(uiRoot, this.input);
     this.overlay = new Overlay(uiRoot);
 
     this.world = new World({
@@ -90,7 +93,11 @@ export class Game {
 
     this.hud.refreshGrades(this.progression);
     this.hud.setObjective(this.progression.nextObjective());
-    this.hud.showHint('W/S move · A/D turn · Shift run · E interact · R report · P pause');
+    this.hud.showHint(
+      isTouchDevice()
+        ? 'Drag the joystick to move · tap E near a station to play'
+        : 'W/S move · A/D turn · Shift run · E interact · R report · P pause',
+    );
 
     this.setupDevApi();
     void canvas;
@@ -107,6 +114,7 @@ export class Game {
         grades: Object.fromEntries(
           (Object.keys(this.progression.xp) as SubjectId[]).map((s) => [s, this.progression.gradeOf(s)]),
         ),
+        pos: { x: this.player.pos.x, z: this.player.pos.z },
       }),
       startMinigame: (kind: MinigameKind, subject: SubjectId, tier: Tier) =>
         this.startMinigame(subject, kind, tier),
