@@ -1,4 +1,5 @@
 import type * as THREE from 'three';
+import type { SfxName } from '../audio';
 import type { Input } from '../input';
 import type { Player } from '../player';
 import type { MinigameResult, SubjectId, Tier, TierBank } from '../types';
@@ -27,6 +28,8 @@ export interface MinigameContext {
   panel: HTMLElement | null;
   /** 3D world access for the arcade game; null for DOM minigames. */
   arena: ArenaAccess | null;
+  /** Play a short sound effect (correct/wrong feedback, etc.). */
+  playSfx: (name: SfxName) => void;
   finish: (result: MinigameResult) => void;
 }
 

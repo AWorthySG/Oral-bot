@@ -139,6 +139,27 @@ export class Progression {
     return { xpGain: gain, oldGrade, newGrade, messages, zoneUnlocks, cosmeticUnlocks };
   }
 
+  /** A short suggested next goal, shown on the HUD and pause screen. */
+  nextObjective(): string {
+    const belowC6 = CORE_SUBJECTS.filter((s) => !hasGrade(this.xp[s], 'C6'));
+    if (belowC6.length > 0) {
+      const target = belowC6.sort((a, b) => this.xp[b] - this.xp[a])[0]!;
+      return `Reach C6 in ${SUBJECT_NAMES[target]} to unlock its A-Level paper`;
+    }
+    if (!this.isZoneUnlocked('econs')) {
+      return 'Lift Maths and two more subjects to C6 to open the Economics zone';
+    }
+    if (!this.isZoneUnlocked('gp')) {
+      return 'Build three subjects to D7+ to open the General Paper zone';
+    }
+    const notTopped = SUBJECT_IDS.filter((s) => this.isZoneUnlocked(s) && this.gradeOf(s) !== 'A1');
+    if (notTopped.length > 0) {
+      const target = notTopped.sort((a, b) => this.xp[b] - this.xp[a])[0]!;
+      return `Push ${SUBJECT_NAMES[target]} all the way to A1`;
+    }
+    return 'You have topped every subject — a perfect scholar!';
+  }
+
   toSave(): SaveData {
     return {
       version: 1,
