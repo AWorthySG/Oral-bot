@@ -15,14 +15,6 @@ window.addEventListener('resize', () => {
   game.onResize();
 });
 
-// "Best played with a keyboard" notice on touch devices.
-if (window.matchMedia('(pointer: coarse)').matches) {
-  const notice = document.createElement('div');
-  notice.className = 'touch-notice';
-  notice.textContent = '⌨ Best played with a keyboard';
-  document.getElementById('ui-root')!.appendChild(notice);
-}
-
 const clock = new THREE.Clock();
 function loop(): void {
   const dt = Math.min(clock.getDelta(), 0.05);

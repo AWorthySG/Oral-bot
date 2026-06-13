@@ -18,7 +18,7 @@ npm run build    # type-check + produce a static site in dist/
 npm run preview  # serve the production build
 ```
 
-Desktop with a keyboard is recommended.
+Works on desktop (keyboard) and on phones/tablets (on-screen touch controls).
 
 ## Controls
 
@@ -31,6 +31,11 @@ Desktop with a keyboard is recommended.
 | `R` | Open your report card |
 | `M` | Toggle sound on/off |
 | `P` / `Esc` | Pause / help |
+
+On a touch device, an on-screen **joystick** (bottom-left) moves you and the
+**E** button interacts; the round buttons map to the report card and the
+pause/menu. These drive the same controls as the keyboard, so every minigame —
+including the 3D arcade — is fully playable by touch.
 
 The HUD shows a **mini-map** (top-right) of the island and zones, plus a
 **current objective** that suggests what to aim for next. Finishing a minigame
