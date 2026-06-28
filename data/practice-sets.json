@@ -1,0 +1,80 @@
+[
+  {
+    "id": "single-use-plastic",
+    "theme": "The Environment",
+    "title": "Reducing Single-Use Plastic",
+    "youtubeId": "_6xlNyWPpB8",
+    "videoNote": "TED-Ed: What really happens to the plastic you throw away.",
+    "part1Prompt": "The video shows what happens to plastic after we throw it away. Some people think individuals should do more to cut down on single-use plastic, while others feel it is the responsibility of companies and the government. What is your view, and what could young people in Singapore do to use less plastic?",
+    "part2Seeds": [
+      "You mentioned what young people could do. Which of those do you think would actually make the biggest difference, and why?",
+      "Some say banning plastic bags and straws is just a token gesture. Would you agree?",
+      "How easy or difficult would it be for your own family to reduce the plastic they use?"
+    ]
+  },
+  {
+    "id": "social-media",
+    "theme": "Technology & Society",
+    "title": "Spending Time on Social Media",
+    "youtubeId": "3E7hkPZ-HTk",
+    "videoNote": "TEDx: Why you should quit social media (Cal Newport).",
+    "part1Prompt": "The speaker argues that social media can harm our focus and wellbeing. Do you think social media does more good or more harm for teenagers today? Talk about how it affects you and the people around you.",
+    "part2Seeds": [
+      "You shared your view on social media. If a younger student asked you for one piece of advice about using it, what would you say?",
+      "Do you think schools should teach students how to use social media wisely, or is that a job for parents?",
+      "Could you ever imagine giving up social media for a month? What would be the hardest part?"
+    ]
+  },
+  {
+    "id": "acts-of-kindness",
+    "theme": "Community & Values",
+    "title": "Small Acts of Kindness",
+    "youtubeId": "O9UByLyOjBM",
+    "videoNote": "Short film on the ripple effect of everyday kindness.",
+    "part1Prompt": "The video shows how one small act of kindness can spread to others. Tell us about a time you saw or did something kind, and explain why you think kindness matters in a busy society like Singapore.",
+    "part2Seeds": [
+      "You gave an example of kindness. Do you think people today are less kind than they used to be, or does it just feel that way?",
+      "Should kindness be taught and rewarded in schools, or should it come naturally?",
+      "Is there a situation where being kind is actually difficult to do? Tell us about it."
+    ]
+  },
+  {
+    "id": "food-waste",
+    "theme": "The Environment",
+    "title": "Tackling Food Waste",
+    "youtubeId": "ishA6kry8nc",
+    "videoNote": "Explainer on the scale of global food waste.",
+    "part1Prompt": "The video highlights how much food the world wastes every year. Why do you think food waste is such a big problem, and what could households, schools or hawker centres in Singapore do to waste less food?",
+    "part2Seeds": [
+      "You suggested some ways to cut food waste. Which one is the most realistic for a teenager to start doing today?",
+      "Do you think people waste food because they don't care, or because they don't notice?",
+      "Should there be rules or penalties for businesses that throw away good food?"
+    ]
+  },
+  {
+    "id": "screen-time-health",
+    "theme": "Health & Wellbeing",
+    "title": "Screen Time and Staying Active",
+    "youtubeId": "wOMjp0XS_AU",
+    "videoNote": "Clip on the effects of too much screen time and sitting.",
+    "part1Prompt": "The video talks about how much time we now spend in front of screens. Do you think young people in Singapore get enough physical activity? Talk about what gets in the way and what might help them lead a more active life.",
+    "part2Seeds": [
+      "You mentioned what gets in the way of being active. Which of those is the biggest obstacle for you personally?",
+      "Some people say exams and homework leave no time for exercise. Is that a fair excuse?",
+      "If you were the principal of your school, what is one thing you would change to help students stay active?"
+    ]
+  },
+  {
+    "id": "reading-habits",
+    "theme": "Learning & Growth",
+    "title": "Do We Still Read?",
+    "youtubeId": "5_WV3Ox0erk",
+    "videoNote": "Clip on the benefits of reading and falling reading habits.",
+    "part1Prompt": "The video suggests that fewer young people read books for pleasure today. Do you enjoy reading? Talk about whether you think reading is still important in a world of videos and short clips, and how more teenagers might be encouraged to read.",
+    "part2Seeds": [
+      "You shared your thoughts on reading. What kind of book or article would actually make you want to keep reading?",
+      "Do you think watching a video can teach you as much as reading about the same topic?",
+      "Whose responsibility is it to get young people reading more — schools, parents, or the students themselves?"
+    ]
+  }
+]
